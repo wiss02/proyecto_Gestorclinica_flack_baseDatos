@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Consulta - Clínica Médica{% endblock %}
+{% block page_title %}Editar Consulta{% endblock %}
+{% block page_subtitle %}Modificar consulta #{{ consulta.id_consulta }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>✏️ Editar Consulta</h2>
+    </div>
+    <div class="card-body">
+        <div class="form-container">
+            <form method="POST" action="{{ url_for('consultas.edit', id=consulta.id_consulta) }}">
+                <div class="form-group">
+                    <label class="form-label" for="fecha">Fecha de la Consulta <span class="required">*</span></label>
+                    <input type="date" id="fecha" name="fecha" class="form-control"
+                           value="{{ consulta.fecha.strftime('%Y-%m-%d') }}" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="id_medico">Médico <span class="required">*</span></label>
+                        <select id="id_medico" name="id_medico" class="form-control" required>
+                            <option value="">Seleccionar médico...</option>
+                            {% for medico in medicos %}
+                            <option value="{{ medico.id_medico }}" {% if medico.id_medico == consulta.id_medico %}selected{% endif %}>
+                                {{ medico.nombre }} — {{ medico.especialidad }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="id_paciente">Paciente <span class="required">*</span></label>
+                        <select id="id_paciente" name="id_paciente" class="form-control" required>
+                            <option value="">Seleccionar paciente...</option>
+                            {% for paciente in pacientes %}
+                            <option value="{{ paciente.id_paciente }}" {% if paciente.id_paciente == consulta.id_paciente %}selected{% endif %}>
+                                {{ paciente.nombre }} ({{ paciente.edad }} años)
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="diagnostico">Diagnóstico <span class="required">*</span></label>
+                    <textarea id="diagnostico" name="diagnostico" class="form-control" required>{{ consulta.diagnostico }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="tratamiento">Tratamiento <span class="required">*</span></label>
+                    <textarea id="tratamiento" name="tratamiento" class="form-control" required>{{ consulta.tratamiento }}</textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">💾 Actualizar Consulta</button>
+                    <a href="{{ url_for('consultas.index') }}" class="btn btn-outline">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Clínica Médica{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block page_subtitle %}Resumen general del sistema{% endblock %}
+
+{% block content %}
+<!-- Stats Cards -->
+<div class="stats-grid">
+    <div class="stat-card medicos">
+        <div class="stat-icon">👨‍⚕️</div>
+        <div class="stat-info">
+            <h3>{{ total_medicos }}</h3>
+            <p>Médicos Registrados</p>
+        </div>
+    </div>
+    <div class="stat-card pacientes">
+        <div class="stat-icon">🧑‍🤝‍🧑</div>
+        <div class="stat-info">
+            <h3>{{ total_pacientes }}</h3>
+            <p>Pacientes Registrados</p>
+        </div>
+    </div>
+    <div class="stat-card consultas">
+        <div class="stat-icon">📋</div>
+        <div class="stat-info">
+            <h3>{{ total_consultas }}</h3>
+            <p>Consultas Realizadas</p>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Consultations -->
+<div class="card">
+    <div class="card-header">
+        <h2>📋 Últimas Consultas</h2>
+        <a href="{{ url_for('consultas.index') }}" class="btn btn-outline btn-sm">Ver todas</a>
+    </div>
+    <div class="card-body" style="padding: 0;">
+        {% if ultimas_consultas %}
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Paciente</th>
+                        <th>Médico</th>
+                        <th>Diagnóstico</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for consulta in ultimas_consultas %}
+                    <tr>
+                        <td><span class="badge badge-secondary">{{ consulta.fecha.strftime('%d/%m/%Y') }}</span></td>
+                        <td><strong>{{ consulta.paciente.nombre }}</strong></td>
+                        <td>
+                            <span class="relation-tag">
+                                👨‍⚕️ <strong>{{ consulta.medico.nombre }}</strong>
+                            </span>
+                        </td>
+                        <td>{{ consulta.diagnostico[:60] }}{% if consulta.diagnostico|length > 60 %}...{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">📋</div>
+            <h3>Sin consultas aún</h3>
+            <p>Registra la primera consulta médica para verla aquí.</p>
+            <a href="{{ url_for('consultas.create') }}" class="btn btn-primary btn-sm">Registrar Consulta</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

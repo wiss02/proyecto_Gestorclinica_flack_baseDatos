@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Consultas - Clínica Médica{% endblock %}
+{% block page_title %}Consultas{% endblock %}
+{% block page_subtitle %}Registro de consultas médicas realizadas{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>📋 Lista de Consultas</h2>
+        <a href="{{ url_for('consultas.create') }}" class="btn btn-primary btn-sm">+ Nueva Consulta</a>
+    </div>
+    <div class="card-body" style="padding: 0;">
+        {% if consultas %}
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Paciente</th>
+                        <th>Médico</th>
+                        <th>Diagnóstico</th>
+                        <th>Tratamiento</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for consulta in consultas %}
+                    <tr>
+                        <td><span class="badge badge-secondary">#{{ consulta.id_consulta }}</span></td>
+                        <td><strong>{{ consulta.fecha.strftime('%d/%m/%Y') }}</strong></td>
+                        <td>
+                            <span class="relation-tag">
+                                🧑‍🤝‍🧑 <strong>{{ consulta.paciente.nombre }}</strong>
+                            </span>
+                        </td>
+                        <td>
+                            <span class="relation-tag">
+                                👨‍⚕️ <strong>{{ consulta.medico.nombre }}</strong>
+                                <span class="badge badge-primary" style="margin-left: 4px; font-size: 10px;">{{ consulta.medico.especialidad }}</span>
+                            </span>
+                        </td>
+                        <td>{{ consulta.diagnostico[:50] }}{% if consulta.diagnostico|length > 50 %}...{% endif %}</td>
+                        <td>{{ consulta.tratamiento[:50] }}{% if consulta.tratamiento|length > 50 %}...{% endif %}</td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{{ url_for('consultas.edit', id=consulta.id_consulta) }}" class="btn btn-warning btn-sm">✏️ Editar</a>
+                                <button class="btn btn-danger btn-sm" onclick="confirmDelete('{{ url_for('consultas.delete', id=consulta.id_consulta) }}')">🗑️ Eliminar</button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">📋</div>
+            <h3>No hay consultas registradas</h3>
+            <p>Registra la primera consulta médica del sistema.</p>
+            <a href="{{ url_for('consultas.create') }}" class="btn btn-primary btn-sm">+ Registrar Consulta</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Nueva Consulta - Clínica Médica{% endblock %}
+{% block page_title %}Nueva Consulta{% endblock %}
+{% block page_subtitle %}Registrar una nueva consulta médica{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>📋 Datos de la Consulta</h2>
+    </div>
+    <div class="card-body">
+        <div class="form-container">
+            <form method="POST" action="{{ url_for('consultas.create') }}">
+                <div class="form-group">
+                    <label class="form-label" for="fecha">Fecha de la Consulta <span class="required">*</span></label>
+                    <input type="date" id="fecha" name="fecha" class="form-control" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="id_medico">Médico <span class="required">*</span></label>
+                        <select id="id_medico" name="id_medico" class="form-control" required>
+                            <option value="">Seleccionar médico...</option>
+                            {% for medico in medicos %}
+                            <option value="{{ medico.id_medico }}">{{ medico.nombre }} — {{ medico.especialidad }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="id_paciente">Paciente <span class="required">*</span></label>
+                        <select id="id_paciente" name="id_paciente" class="form-control" required>
+                            <option value="">Seleccionar paciente...</option>
+                            {% for paciente in pacientes %}
+                            <option value="{{ paciente.id_paciente }}">{{ paciente.nombre }} ({{ paciente.edad }} años)</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="diagnostico">Diagnóstico <span class="required">*</span></label>
+                    <textarea id="diagnostico" name="diagnostico" class="form-control"
+                              placeholder="Describa el diagnóstico del paciente..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="tratamiento">Tratamiento <span class="required">*</span></label>
+                    <textarea id="tratamiento" name="tratamiento" class="form-control"
+                              placeholder="Describa el tratamiento indicado..." required></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">💾 Guardar Consulta</button>
+                    <a href="{{ url_for('consultas.index') }}" class="btn btn-outline">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

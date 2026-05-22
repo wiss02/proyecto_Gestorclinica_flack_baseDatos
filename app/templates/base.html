@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistema de Gestión de Clínica Médica - Administración de médicos, pacientes y consultas">
+    <title>{% block title %}Clínica Médica{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    {% if current_user.is_authenticated %}
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">🏥</div>
+                <div class="brand-text">
+                    <span class="brand-name">ClínicaMed</span>
+                    <span class="brand-sub">Sistema de Gestión</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">Principal</div>
+                <a href="{{ url_for('main.dashboard') }}" class="nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </a>
+
+                <div class="nav-section-title">Gestión</div>
+                <a href="{{ url_for('medicos.index') }}" class="nav-link {% if request.endpoint and 'medicos' in request.endpoint %}active{% endif %}">
+                    <span class="nav-icon">👨‍⚕️</span>
+                    Médicos
+                </a>
+                <a href="{{ url_for('pacientes.index') }}" class="nav-link {% if request.endpoint and 'pacientes' in request.endpoint %}active{% endif %}">
+                    <span class="nav-icon">🧑‍🤝‍🧑</span>
+                    Pacientes
+                </a>
+                <a href="{{ url_for('consultas.index') }}" class="nav-link {% if request.endpoint and 'consultas' in request.endpoint %}active{% endif %}">
+                    <span class="nav-icon">📋</span>
+                    Consultas
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="{{ url_for('auth.logout') }}" class="nav-link">
+                    <span class="nav-icon">🚪</span>
+                    Cerrar Sesión
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+                    <p>{% block page_subtitle %}{% endblock %}</p>
+                </div>
+                <div class="topbar-right">
+                    <div class="user-badge">
+                        <div class="user-avatar">{{ current_user.username[0]|upper }}</div>
+                        {{ current_user.username }}
+                    </div>
+                </div>
+            </header>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="flash-container">
+                    {% for category, message in messages %}
+                    <div class="flash-message {{ category }}" id="flash-{{ loop.index }}">
+                        {% if category == 'success' %}✅{% elif category == 'danger' %}❌{% elif category == 'warning' %}⚠️{% else %}ℹ️{% endif %}
+                        {{ message }}
+                        <button class="flash-close" onclick="this.parentElement.remove()">×</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            {% endwith %}
+
+            <div class="page-content">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+    {% else %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div style="position: fixed; top: 20px; right: 20px; z-index: 9999; width: 360px;">
+                {% for category, message in messages %}
+                <div class="flash-message {{ category }}" style="margin-bottom: 8px;">
+                    {% if category == 'success' %}✅{% elif category == 'danger' %}❌{% elif category == 'warning' %}⚠️{% else %}ℹ️{% endif %}
+                    {{ message }}
+                    <button class="flash-close" onclick="this.parentElement.remove()">×</button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endwith %}
+        {% block content_auth %}{% endblock %}
+    {% endif %}
+
+    <!-- Modal de confirmación para eliminar -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal-box">
+            <div class="modal-icon">⚠️</div>
+            <h3>Confirmar Eliminación</h3>
+            <p>¿Estás seguro de que deseas eliminar este registro? Esta acción no se puede deshacer.</p>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeDeleteModal()">Cancelar</button>
+                <form id="deleteForm" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-close flash messages after 5 seconds
+        setTimeout(() => {
+            document.querySelectorAll('.flash-message').forEach(el => {
+                el.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(-10px)';
+                setTimeout(() => el.remove(), 300);
+            });
+        }, 5000);
+
+        // Delete confirmation modal
+        function confirmDelete(url) {
+            document.getElementById('deleteForm').action = url;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+        }
+
+        document.getElementById('deleteModal').addEventListener('click', function(e) {
+            if (e.target === this) closeDeleteModal();
+        });
+    </script>
+</body>
+</html>

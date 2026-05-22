@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Médicos - Clínica Médica{% endblock %}
+{% block page_title %}Médicos{% endblock %}
+{% block page_subtitle %}Gestión del personal médico de la clínica{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>👨‍⚕️ Lista de Médicos</h2>
+        <a href="{{ url_for('medicos.create') }}" class="btn btn-primary btn-sm">+ Nuevo Médico</a>
+    </div>
+    <div class="card-body" style="padding: 0;">
+        {% if medicos %}
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Especialidad</th>
+                        <th>Teléfono</th>
+                        <th>Correo</th>
+                        <th>Consultas</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for medico in medicos %}
+                    <tr>
+                        <td><span class="badge badge-primary">#{{ medico.id_medico }}</span></td>
+                        <td><strong>{{ medico.nombre }}</strong></td>
+                        <td>{{ medico.especialidad }}</td>
+                        <td>{{ medico.telefono }}</td>
+                        <td>{{ medico.correo }}</td>
+                        <td><span class="badge badge-secondary">{{ medico.consultas|length }}</span></td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{{ url_for('medicos.edit', id=medico.id_medico) }}" class="btn btn-warning btn-sm">✏️ Editar</a>
+                                <button class="btn btn-danger btn-sm" onclick="confirmDelete('{{ url_for('medicos.delete', id=medico.id_medico) }}')">🗑️ Eliminar</button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">👨‍⚕️</div>
+            <h3>No hay médicos registrados</h3>
+            <p>Comienza registrando al primer médico de la clínica.</p>
+            <a href="{{ url_for('medicos.create') }}" class="btn btn-primary btn-sm">+ Registrar Médico</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
